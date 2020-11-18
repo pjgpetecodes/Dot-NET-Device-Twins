@@ -12,11 +12,13 @@ namespace devicetwins
 
 		static string IoTHubConnectionString = "";
 		static string DeviceConnectionString = "";
-		static string DeviceID="";
+		static string DeviceID = "";
+		static string desiredProperty = "";
+		static string reportedProperty = "";
 		static DeviceClient Client = null;
 
-		static int tempLevel = 30;
-		static int coolerOn = 0;
+		static int desiredPropertyValue = 30;
+		static int ReportedPropertyValue = 0;
 
         static async Task Main(string[] args)
         {
@@ -41,23 +43,29 @@ namespace devicetwins
 				
 				Console.WriteLine("Enter the Device ID");
 				DeviceID = Console.ReadLine();
+
+				Console.WriteLine("Enter the Desired Property Key");
+				desiredProperty = Console.ReadLine();				
+
+				Console.WriteLine("Enter the Reported Property Key");
+				reportedProperty = Console.ReadLine();				
 				
 				InitClient();
 
 				GetDeviceTwinAsync().Wait();
                 Client.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertyChanged, null).Wait();
 
-				var coolerOnSetting = "";
+				var reportedPropertyValueString = "";
 
 				while (true)
 				{
-					Console.WriteLine("Set Cooler Control (0=off, 1=on) (Enter to exit)");
-					coolerOnSetting = Console.ReadLine();
+					Console.WriteLine($"Set value for {reportedProperty} Reported Property (Enter to exit)");
+					reportedPropertyValueString = Console.ReadLine();
 
-					if (coolerOnSetting != null && coolerOnSetting != "")
+					if (reportedPropertyValueString != null && reportedPropertyValueString != "")
 					{
-						coolerOn = Int32.Parse(coolerOnSetting);
-						await ReportCoolerControl();
+						ReportedPropertyValue = Int32.Parse(reportedPropertyValueString);
+						await ReportProperty();
 					}
 					else
 					{
@@ -106,15 +114,15 @@ namespace devicetwins
 			}
 		}
 
-		public static async Task ReportCoolerControl()
+		public static async Task ReportProperty()
 		{
 			try
 			{
-				Console.WriteLine("Sending Cooler Control as reported property");
+				Console.WriteLine($"Sending reported property {reportedProperty} value");
 
 				TwinCollection reportedProperties;
 				reportedProperties = new TwinCollection();
-				reportedProperties["coolerOn"] = coolerOn;
+				reportedProperties["coolerOn"] = ReportedPropertyValue;
 				await Client.UpdateReportedPropertiesAsync(reportedProperties);
 			}
 			catch (Exception ex)
@@ -130,8 +138,8 @@ namespace devicetwins
             {
                 Console.WriteLine("Desired property change:");
                 Console.WriteLine(JsonConvert.SerializeObject(desiredProperties));
-				tempLevel = desiredProperties["tempLevel"];
-				Console.WriteLine($"Temperature Level is now: {tempLevel}");
+				desiredPropertyValue = desiredProperties[desiredProperty];
+				Console.WriteLine($"Desired Property {desiredProperty} is now: {desiredPropertyValue}");
             }
             catch (AggregateException ex)
             {

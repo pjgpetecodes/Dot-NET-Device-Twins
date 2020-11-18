@@ -14,7 +14,7 @@ A .NET Core Azure IoT Hubs Device Twins Demo App
 
 - Run the application with;
 
-```cs
+```
 dotnet run
 ```
 
