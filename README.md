@@ -9,7 +9,7 @@ A .NET Core Azure IoT Hubs Device Twins Demo App
 - Add a Desired Property of;
 
 ```JSON
-"fanSpeed": 10,
+"<Name of desired property>": 10,
 ```
 
 - Run the application with;
@@ -24,7 +24,9 @@ dotnet run
 - Paste into the console when prompted
 - Copy the Device ID from the Device Details Page
 - Paste into the conosle when prompted
-- Change the `fanspeed` Desired Property value in the Device Twin and hit the `Save` button.
+- Enter the key name of the Desired Property you created above
+- Enter the name of a Reported Property
+- Change the Desired Property value in the Device Twin and hit the `Save` button.
 - View the change in the console.
-- Enter a value for the Cooler Control.
-- Refresh the Device Twin and view the `coolerOn` Reported Property.
+- Enter a value for the Reported Property.
+- Refresh the Device Twin and view the Reported Property change.
